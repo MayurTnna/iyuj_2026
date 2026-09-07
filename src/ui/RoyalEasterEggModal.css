@@ -1,0 +1,146 @@
+﻿/* ==========================================================================
+   QUEEN JIYU - ROYAL EASTER EGG MODAL STYLES
+   Secret sovereign frequencies unlocked via keyboard code 'JIYU' or 5 crown clicks
+   ========================================================================== */
+
+.royal-egg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    background: rgba(2, 4, 8, 0.92);
+    backdrop-filter: blur(24px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: eggFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes eggFadeIn {
+    0% { opacity: 0; transform: scale(0.94); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.royal-egg-card {
+    background: radial-gradient(circle at 50% 0%, rgba(26, 38, 77, 0.95), rgba(8, 14, 30, 0.98));
+    border: 1.5px solid rgba(255, 215, 0, 0.5);
+    border-radius: 28px;
+    padding: 3rem 2.4rem;
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 70px rgba(255, 215, 0, 0.35), inset 0 0 30px rgba(255, 215, 0, 0.08);
+    position: relative;
+    color: #F8F9FA;
+}
+
+.royal-egg-close-btn {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.4rem;
+    background: none;
+    border: none;
+    color: rgba(248, 249, 250, 0.5);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.royal-egg-close-btn:hover {
+    color: #FFD700;
+    transform: scale(1.15);
+}
+
+.royal-egg-crest {
+    font-size: 3.2rem;
+    margin-bottom: 1.2rem;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+    animation: eggCrestPulse 3s ease-in-out infinite;
+}
+
+@keyframes eggCrestPulse {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-6px) scale(1.08); }
+}
+
+.royal-egg-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 1.2rem;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 30px;
+    margin-bottom: 1.2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F3E5AB;
+}
+
+.royal-egg-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.4rem, 2.8vw, 1.85rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F3E5AB 60%, #D4AF37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.4rem;
+}
+
+.royal-egg-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+    font-style: italic;
+    line-height: 1.6;
+    color: #FFF8DC;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.royal-egg-subtext {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: rgba(248, 249, 250, 0.75);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.royal-egg-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.75rem;
+    color: rgba(248, 249, 250, 0.5);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 0.8rem 0;
+}
+
+.btn-royal-egg-action {
+    padding: 0.9rem 2.2rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
+    border: none;
+    color: #020408;
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-royal-egg-action:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 45px rgba(255, 215, 0, 0.7);
+}

@@ -1,0 +1,285 @@
+/* ==========================================================================
+   QUEEN JIYU - LUXURY CELESTIAL HUD
+   Instrument-grade interface, glassmorphism, gold accents & typography
+   ========================================================================== */
+
+.celestial-hud {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Inter', sans-serif;
+    color: #F8F9FA;
+    padding: 1.4rem 2rem;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* TOP HUD BAR */
+.hud-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    pointer-events: auto;
+}
+
+.hud-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    background: rgba(10, 17, 40, 0.45);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    backdrop-filter: blur(16px);
+    padding: 0.45rem 1.1rem;
+    border-radius: 40px;
+    transition: all 0.3s ease;
+}
+
+.hud-brand:hover {
+    border-color: #FFD700;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.hud-crown-icon {
+    width: 22px;
+    height: 18px;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.hud-brand-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* REALM COMPASS */
+.hud-realm-compass {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(10, 17, 40, 0.45);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    backdrop-filter: blur(16px);
+    padding: 0.45rem 1.4rem;
+    border-radius: 40px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #F3E5AB;
+}
+
+.compass-dot {
+    width: 6px;
+    height: 6px;
+    background: #FFD700;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #FFD700;
+    animation: compassBlink 2s infinite ease-in-out;
+}
+
+@keyframes compassBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+}
+
+.compass-sep {
+    color: rgba(212, 175, 55, 0.4);
+}
+
+/* TOP RIGHT CONTROLS */
+.hud-top-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hud-btn {
+    background: rgba(10, 17, 40, 0.45);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    backdrop-filter: blur(16px);
+    padding: 0.42rem 1.1rem;
+    border-radius: 30px;
+    color: #F8F9FA;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.hud-btn:hover {
+    background: rgba(15, 23, 50, 0.75);
+    border-color: #D4AF37;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+    transform: translateY(-1px);
+}
+
+.hud-btn.active {
+    border-color: #FFD700;
+    background: rgba(212, 175, 55, 0.15);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* AUDIO WAVE ICON */
+.hud-waves {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 12px;
+}
+
+.hud-wave-bar {
+    width: 2px;
+    background: #FFD700;
+    border-radius: 2px;
+    height: 3px;
+    transition: height 0.3s ease;
+}
+
+.hud-btn.playing .bar-1 {
+    animation: hudWave 1.2s infinite ease-in-out 0.1s;
+}
+
+.hud-btn.playing .bar-2 {
+    animation: hudWave 1.2s infinite ease-in-out 0.3s;
+}
+
+.hud-btn.playing .bar-3 {
+    animation: hudWave 1.2s infinite ease-in-out 0.2s;
+}
+
+.hud-btn.playing .bar-4 {
+    animation: hudWave 1.2s infinite ease-in-out 0.4s;
+}
+
+@keyframes hudWave {
+
+    0%,
+    100% {
+        height: 3px;
+    }
+
+    50% {
+        height: 12px;
+    }
+}
+
+/* BOTTOM HUD BAR */
+.hud-bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    pointer-events: auto;
+}
+
+.hud-progress-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    background: rgba(10, 17, 40, 0.45);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    backdrop-filter: blur(16px);
+    padding: 0.6rem 1.2rem;
+    border-radius: 16px;
+    min-width: 240px;
+}
+
+.hud-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #F3E5AB;
+}
+
+.hud-progress-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.hud-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #D4AF37, #FFD700);
+    box-shadow: 0 0 10px #FFD700;
+    transition: width 0.6s ease;
+}
+
+/* QUALITY SELECTOR */
+.hud-tier-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(10, 17, 40, 0.45);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    backdrop-filter: blur(16px);
+    padding: 0.25rem 0.5rem;
+    border-radius: 30px;
+}
+
+.tier-pill {
+    background: none;
+    border: none;
+    color: rgba(248, 249, 250, 0.5);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.55rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tier-pill.active {
+    color: #020408;
+    background: #FFD700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* MOBILE HUD RESPONSIVENESS */
+@media (max-width: 768px) {
+    .celestial-hud {
+        padding: 0.8rem 1rem;
+    }
+
+    .hud-realm-compass {
+        display: none;
+    }
+
+    .hud-progress-block {
+        min-width: 160px;
+        padding: 0.5rem 0.8rem;
+    }
+
+    .hud-brand-title {
+        display: none;
+    }
+}
