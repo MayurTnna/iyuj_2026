@@ -5,15 +5,17 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, BookOpen, CheckCircle, ArrowLeft, Crown, Music } from 'lucide-react';
 import { useUniverseStore } from '../store/universeStore';
-import { REALMS } from '../data/realms';
+import { REALMS, REALM_IDS } from '../data/realms';
 import { SoundtrackManager } from '../audio/SoundtrackManager';
 import { QueenFinaleModal } from './Queen/QueenFinaleModal';
+import { CoronationConvergenceAnimation } from './Queen/CoronationConvergenceAnimation';
 import './RealmOverlay.css';
 
 export const RealmOverlay: React.FC = () => {
     const { activeRealmId, memories, completeRealm, unlockMemory, navigateToRealm } = useUniverseStore();
     const [inspectingMemory, setInspectingMemory] = useState(false);
     const [showingFinale, setShowingFinale] = useState(false);
+    const [isConverging, setIsConverging] = useState(false);
     const [showingAlignmentAlert, setShowingAlignmentAlert] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
     const audioManager = SoundtrackManager.getInstance();
@@ -28,9 +30,17 @@ export const RealmOverlay: React.FC = () => {
     const realmMemory = memories.find((m) => m.realmId === activeRealmId);
     const isQueenRealm = activeRealmId === 'queen';
 
+    const journeyMemoriesUnlocked = memories.filter((m) => m.realmId !== 'queen' && m.unlocked).length;
     const unlockedMemoriesCount = memories.filter((m) => m.unlocked).length;
     const totalMemoriesCount = memories.length;
-    const isFullyUnlocked = unlockedMemoriesCount === totalMemoriesCount;
+    const isFullyUnlocked = journeyMemoriesUnlocked >= 9 || unlockedMemoriesCount >= totalMemoriesCount;
+
+    // When entering Queen's Chamber, if 9 journey memories are aligned, Queen memory completes
+    useEffect(() => {
+        if (isQueenRealm && journeyMemoriesUnlocked >= 9 && realmMemory && !realmMemory.unlocked) {
+            unlockMemory(realmMemory.id);
+        }
+    }, [isQueenRealm, journeyMemoriesUnlocked, realmMemory, unlockMemory]);
 
     const handleInspectMemory = () => {
         audioManager.playCelestialChime();
@@ -51,7 +61,9 @@ export const RealmOverlay: React.FC = () => {
             audioManager.playCelestialChime();
             setShowingAlignmentAlert(true);
         } else {
-            setShowingFinale(true);
+            audioManager.stopAll();
+            audioManager.playCelestialChime();
+            setIsConverging(true);
         }
     };
 
@@ -240,6 +252,24 @@ export const RealmOverlay: React.FC = () => {
                             </button>
 
                             <button
+                                className="btn-realm-primary"
+                                style={{
+                                    background: 'linear-gradient(135deg, #FFD700 0%, #FFF8DC 50%, #B45309 100%)',
+                                    color: '#020408'
+                                }}
+                                onClick={() => {
+                                    REALM_IDS.forEach((id) => completeRealm(id));
+                                    setShowingAlignmentAlert(false);
+                                    audioManager.stopAll();
+                                    audioManager.playCelestialChime();
+                                    setIsConverging(true);
+                                }}
+                            >
+                                <Crown size={14} />
+                                <span>Sovereign Coronation Now 👑</span>
+                            </button>
+
+                            <button
                                 className="btn-realm-secondary"
                                 onClick={() => setShowingAlignmentAlert(false)}
                             >
@@ -248,6 +278,16 @@ export const RealmOverlay: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* 10-Memory Coronation Constellation Convergence Animation */}
+            {isConverging && (
+                <CoronationConvergenceAnimation
+                    onComplete={() => {
+                        setIsConverging(false);
+                        setShowingFinale(true);
+                    }}
+                />
             )}
 
             {/* Christopher Nolan Grand Finale Loop Modal */}

@@ -503,14 +503,28 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
                 <section className="hero-gatekeeper" id="heroGatekeeperSection">
                     {/* Heart-Touching Hero Header */}
                     <div className="hero-header-box" id="heroHeaderBox">
-                        <div className="monogram-badge">
-                            <span className="monogram-icon">👑</span>
-                            <span className="monogram-text">The Royal Prelude</span>
-                        </div>
-                        <h1 className="royal-hero-title">Until The Universe Celebrates You</h1>
-                        <p className="royal-hero-subtitle">
-                            Every second that ticks is a star falling in your honor, counting down to Queen Jiyu's special day.
-                        </p>
+                        {isTimerEnded ? (
+                            <div className="birthday-celebration-hero">
+                                <div className="celebration-crown-icon">👑</div>
+                                <h1 className="royal-hero-title celebration-title">
+                                    Queen Jiyu's Birthday Has Begun!
+                                </h1>
+                                <p className="royal-hero-subtitle celebration-subtitle">
+                                    ✨ The Celestial Universe Has Awakened In Your Honor ✨
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="monogram-badge">
+                                    <span className="monogram-icon">👑</span>
+                                    <span className="monogram-text">The Royal Prelude</span>
+                                </div>
+                                <h1 className="royal-hero-title">Until The Universe Celebrates You</h1>
+                                <p className="royal-hero-subtitle">
+                                    Every second that ticks is a star falling in your honor, counting down to Queen Jiyu's special day.
+                                </p>
+                            </>
+                        )}
                     </div>
 
                     {/* Sacred Royal Artifact Countdown Timer Container */}

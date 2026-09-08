@@ -148,15 +148,7 @@ export const BirthdayFireworks: React.FC = () => {
     return (
         <div className="fireworks-container">
             <canvas ref={canvasRef} className="fireworks-canvas" />
-            <div className="birthday-announcement-banner">
-                <div className="announcement-crown">👑</div>
-                <h1 className="announcement-main-title">
-                    Queen Jiyu's Birthday Has Begun!
-                </h1>
-                <p className="announcement-subtitle">
-                    ✨ The Celestial Universe Has Awakened In Your Honor ✨
-                </p>
-            </div>
         </div>
     );
 };
+

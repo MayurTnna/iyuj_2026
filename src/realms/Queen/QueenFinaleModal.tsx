@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import rawMoonImg from '../../assets/images/raw_moon.jpg';
 import { useUniverseStore } from '../../store/universeStore';
+import { SoundtrackManager } from '../../audio/SoundtrackManager';
 import './QueenFinaleModal.css';
 
 interface QueenFinaleModalProps {
@@ -28,16 +29,12 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
 
     const timerRef = useRef<number | null>(null);
     const snowCanvasRef = useRef<HTMLCanvasElement | null>(null);
-    const khamoshiyanRef = useRef<HTMLAudioElement | null>(null);
     const perfectRef = useRef<HTMLAudioElement | null>(null);
 
     const stopAllAudio = () => {
-        if (khamoshiyanRef.current) {
-            khamoshiyanRef.current.pause();
-            khamoshiyanRef.current = null;
-        }
         if (perfectRef.current) {
             perfectRef.current.pause();
+            perfectRef.current.currentTime = 0;
             perfectRef.current = null;
         }
     };
@@ -55,61 +52,34 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
         navigateToRealm('retina');
     };
 
-    // 1. Grand Finale Audio Sequencing:
-    // 0 - 10s: Khamoshiyan gentle fade-in
-    // 10s+: Crossfade to Ed Sheeran's "Perfect" chorus
+    // ONLY play Ed Sheeran's "Perfect" for Queen Jiyu's Grand Celebration
     useEffect(() => {
         if (!isOpen) {
             stopAllAudio();
             return;
         }
 
-        // Initialize and fade in Khamoshiyan
-        const kham = new Audio('/audio/khamoshiyan.m4a');
-        kham.loop = false;
-        kham.volume = 0;
-        khamoshiyanRef.current = kham;
-        kham.play().catch((err) => console.warn('Khamoshiyan play error:', err));
+        // 1. Terminate all previous soundtrack playback (Kya Khoob Lagti Ho, drones, chimes)
+        SoundtrackManager.getInstance().stopAll();
 
-        let khamVol = 0;
-        const khamFadeInterval = window.setInterval(() => {
-            khamVol = Math.min(0.75, khamVol + 0.05);
-            if (kham) kham.volume = khamVol;
-            if (khamVol >= 0.75) clearInterval(khamFadeInterval);
-        }, 120);
+        // 2. Play ONLY Ed Sheeran's "Perfect"
+        const perfect = new Audio('/audio/perfect.mp3');
+        perfect.loop = true;
+        perfect.currentTime = 0;
+        perfect.volume = 0;
+        perfectRef.current = perfect;
+        perfect.play().catch((err) => console.warn('Perfect playback waiting for interaction:', err));
 
-        // At 9.5s, crossfade Khamoshiyan into Ed Sheeran's "Perfect" chorus
-        const crossfadeTimer = window.setTimeout(() => {
-            // Fade out Khamoshiyan
-            const khamFadeOut = window.setInterval(() => {
-                if (kham) {
-                    kham.volume = Math.max(0, kham.volume - 0.08);
-                    if (kham.volume <= 0) {
-                        clearInterval(khamFadeOut);
-                        kham.pause();
-                    }
-                }
-            }, 100);
-
-            // Start Ed Sheeran Perfect right at the iconic chorus
-            const perfect = new Audio('/audio/perfect.mp3');
-            perfect.loop = true;
-            perfect.currentTime = 52; // "Baby, I'm dancing in the dark..."
-            perfect.volume = 0;
-            perfectRef.current = perfect;
-            perfect.play().catch((err) => console.warn('Perfect play error:', err));
-
-            let perfVol = 0;
-            const perfFadeInterval = window.setInterval(() => {
-                perfVol = Math.min(0.85, perfVol + 0.05);
-                if (perfect) perfect.volume = perfVol;
-                if (perfVol >= 0.85) clearInterval(perfFadeInterval);
-            }, 100);
-        }, 9500);
+        // Smooth fade-in over 1.5 seconds
+        let perfVol = 0;
+        const perfFadeInterval = window.setInterval(() => {
+            perfVol = Math.min(0.85, perfVol + 0.06);
+            if (perfect) perfect.volume = perfVol;
+            if (perfVol >= 0.85) clearInterval(perfFadeInterval);
+        }, 100);
 
         return () => {
-            clearInterval(khamFadeInterval);
-            clearTimeout(crossfadeTimer);
+            clearInterval(perfFadeInterval);
             stopAllAudio();
         };
     }, [isOpen]);
