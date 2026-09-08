@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import rawMoonImg from '../../assets/images/raw_moon.jpg';
 import { useUniverseStore } from '../../store/universeStore';
 import { SoundtrackManager } from '../../audio/SoundtrackManager';
+import { getAssetUrl } from '../../utils/assetHelper';
 import './QueenFinaleModal.css';
 
 interface QueenFinaleModalProps {
@@ -63,7 +64,7 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
         SoundtrackManager.getInstance().stopAll();
 
         // 2. Play ONLY Ed Sheeran's "Perfect"
-        const perfect = new Audio('/audio/perfect.mp3');
+        const perfect = new Audio(getAssetUrl('/audio/perfect.mp3'));
         perfect.loop = true;
         perfect.currentTime = 0;
         perfect.volume = 0;

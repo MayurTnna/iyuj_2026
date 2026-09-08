@@ -7,6 +7,7 @@
 import type { AudioMood } from '../types/universe.types';
 import { SOUNDTRACK_MAP } from '../data/soundtrack';
 import { LeitmotifSynthesizer } from './LeitmotifSynthesizer';
+import { getAssetUrl } from '../utils/assetHelper';
 
 export class SoundtrackManager {
     private static instance: SoundtrackManager | null = null;
@@ -81,7 +82,8 @@ export class SoundtrackManager {
     }
 
     private fadeInRealmAudio(url: string, startTime: number = 0): void {
-        if (this.currentAudioUrl === url && this.realmAudio && !this.realmAudio.paused) {
+        const resolvedUrl = getAssetUrl(url);
+        if (this.currentAudioUrl === resolvedUrl && this.realmAudio && !this.realmAudio.paused) {
             return;
         }
 
@@ -103,14 +105,14 @@ export class SoundtrackManager {
             this.audioFadeInterval = null;
         }
 
-        const audio = new Audio(url);
+        const audio = new Audio(resolvedUrl);
         audio.loop = true;
         audio.volume = 0;
         if (startTime > 0) {
             audio.currentTime = startTime;
         }
         this.realmAudio = audio;
-        this.currentAudioUrl = url;
+        this.currentAudioUrl = resolvedUrl;
 
         audio.play().catch((err) => {
             console.warn('Audio playback error (waiting for user gesture):', err);
