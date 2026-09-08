@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { FireworkSoundEngine } from './FireworkSoundEngine';
 import './BirthdayFireworks.css';
 
 interface Particle {
@@ -42,6 +43,13 @@ export const BirthdayFireworks: React.FC = () => {
         };
         window.addEventListener('resize', handleResize);
 
+        const soundEngine = FireworkSoundEngine.getInstance();
+        const handleUserGesture = () => {
+            soundEngine.init();
+        };
+        window.addEventListener('click', handleUserGesture, { once: true });
+        window.addEventListener('touchstart', handleUserGesture, { once: true });
+
         const rockets: Rocket[] = [];
         const particles: Particle[] = [];
 
@@ -56,9 +64,11 @@ export const BirthdayFireworks: React.FC = () => {
                 vy: -(Math.random() * 4 + 11),
                 color
             });
+            soundEngine.playLaunch(x / width);
         };
 
         const explode = (x: number, y: number, color: string) => {
+            soundEngine.playBurst(x / width);
             const count = 45 + Math.floor(Math.random() * 35);
             for (let i = 0; i < count; i++) {
                 const angle = Math.random() * Math.PI * 2;
@@ -142,6 +152,8 @@ export const BirthdayFireworks: React.FC = () => {
         return () => {
             cancelAnimationFrame(animationFrameId);
             window.removeEventListener('resize', handleResize);
+            window.removeEventListener('click', handleUserGesture);
+            window.removeEventListener('touchstart', handleUserGesture);
         };
     }, []);
 
