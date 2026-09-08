@@ -20,20 +20,16 @@ export const RealmOverlay: React.FC = () => {
     const [isMinimized, setIsMinimized] = useState(false);
     const audioManager = SoundtrackManager.getInstance();
 
-    useEffect(() => {
-        setIsMinimized(false);
-    }, [activeRealmId]);
-
-    if (!activeRealmId) return null;
-
-    const realm = REALMS[activeRealmId];
-    const realmMemory = memories.find((m) => m.realmId === activeRealmId);
     const isQueenRealm = activeRealmId === 'queen';
-
+    const realmMemory = memories.find((m) => m.realmId === activeRealmId);
     const journeyMemoriesUnlocked = memories.filter((m) => m.realmId !== 'queen' && m.unlocked).length;
     const unlockedMemoriesCount = memories.filter((m) => m.unlocked).length;
     const totalMemoriesCount = memories.length;
     const isFullyUnlocked = journeyMemoriesUnlocked >= 9 || unlockedMemoriesCount >= totalMemoriesCount;
+
+    useEffect(() => {
+        setIsMinimized(false);
+    }, [activeRealmId]);
 
     // When entering Queen's Chamber, if 9 journey memories are aligned, Queen memory completes
     useEffect(() => {
@@ -41,6 +37,10 @@ export const RealmOverlay: React.FC = () => {
             unlockMemory(realmMemory.id);
         }
     }, [isQueenRealm, journeyMemoriesUnlocked, realmMemory, unlockMemory]);
+
+    if (!activeRealmId) return null;
+
+    const realm = REALMS[activeRealmId];
 
     const handleInspectMemory = () => {
         audioManager.playCelestialChime();

@@ -492,6 +492,7 @@ a:hover ~ .custom-cursor .cursor-ring {
         transform: scale(0.92);
         filter: blur(8px);
     }
+
     100% {
         opacity: 1;
         transform: scale(1);
