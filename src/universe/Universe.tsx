@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CelestialHUD } from '../ui/CelestialHUD';
 import { UniverseCanvas } from './UniverseCanvas';
 import { RealmOverlay } from '../realms/RealmOverlay';
@@ -10,13 +10,15 @@ import './Universe.css';
 
 export const Universe: React.FC = () => {
     const { activeLeitmotifStage, currentMood, setIsEasterEggOpen } = useUniverseStore();
+    const [isPageReady, setIsPageReady] = useState(false);
     const keyBufferRef = useRef('');
 
     useEffect(() => {
+        if (!isPageReady) return;
         const audio = SoundtrackManager.getInstance();
         audio.init();
         audio.setMood(currentMood, activeLeitmotifStage);
-    }, [currentMood, activeLeitmotifStage]);
+    }, [isPageReady, currentMood, activeLeitmotifStage]);
 
     // Global "JIYU" keyboard easter egg listener
     useEffect(() => {
@@ -43,7 +45,7 @@ export const Universe: React.FC = () => {
 
     return (
         <div className="universe-container">
-            <UniverseCursiveLoader durationMs={2800} />
+            <UniverseCursiveLoader durationMs={2800} onComplete={() => setIsPageReady(true)} />
             <CelestialHUD />
             <UniverseCanvas />
             <RealmOverlay />
