@@ -9,6 +9,8 @@ import { EasterEggModal } from './EasterEggModal';
 import { JiyuConstellationConnectModal } from './JiyuConstellationConnectModal';
 import { QueenPatienceModal } from './QueenPatienceModal';
 import { BirthdayFireworks } from './BirthdayFireworks';
+import { CelebrationSongBanner } from './CelebrationSongBanner';
+import { SoundtrackManager } from '../../audio/SoundtrackManager';
 import './Level0Gate.css';
 
 interface Level0GateProps {
@@ -35,6 +37,7 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
     const [isPatienceModalOpen, setIsPatienceModalOpen] = useState(false);
     const [isTimerEnded, setIsTimerEnded] = useState(false);
     const [devUnlocked, setDevUnlocked] = useState(false);
+    const [isTransitioningToUniverse, setIsTransitioningToUniverse] = useState(false);
 
     // Secret interactions
     const crownClicksRef = useRef(0);
@@ -201,6 +204,8 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
 
             if (difference <= 0) {
                 setIsTimerEnded(true);
+                audioEngine.stopAmbience();
+                setAudioPlaying(false);
                 setTimeRemaining({ days: '00', hours: '00', minutes: '00', seconds: '00' });
                 setStatusMessage(`The moment has arrived! Queen Jiyu's constellation is aligned...`);
                 // Smoothly fade out timer artifact box so fireworks celebration takes center stage
@@ -325,6 +330,8 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
 
     const handleCloseConstellationModal = () => {
         setIsConstellationModalOpen(false);
+        setIsTransitioningToUniverse(false);
+        SoundtrackManager.getInstance().stopAll();
         gsap.to(['#heroHeaderBox', '#timerArtifact', '#heroCtaWrapper'], {
             opacity: 1,
             scale: 1,
@@ -335,14 +342,23 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
 
     const handleEnterUniverseClick = () => {
         if (isTimerEnded || devUnlocked) {
+            // 1. Immediately fade out celebration song (A Sky Full of Stars)
+            setIsTransitioningToUniverse(true);
+
+            // 2. Play cinematic universe formation sound (sub-bass swell, harmonic rise, stardust swoosh)
+            audioEngine.playWarpSound();
+
+            // 3. Fade in universe formation soundtrack (Interstellar - Cornfield Chase)
+            const soundtrackManager = SoundtrackManager.getInstance();
+            soundtrackManager.init();
+            soundtrackManager.setMood('ambient');
+
             gsap.to(['#heroHeaderBox', '#timerArtifact', '#heroCtaWrapper'], {
                 opacity: 0,
                 scale: 0.88,
                 duration: 0.6,
                 ease: 'power2.in'
             });
-
-            audioEngine.playWarpSound();
 
             const reveal = () => {
                 setIsConstellationModalOpen(true);
@@ -512,6 +528,7 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
                                 <p className="royal-hero-subtitle celebration-subtitle">
                                     ✨ The Celestial Universe Has Awakened In Your Honor ✨
                                 </p>
+                                <CelebrationSongBanner fadeOut={isTransitioningToUniverse} />
                             </div>
                         ) : (
                             <>
@@ -677,7 +694,14 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
                 onClose={handleCloseCharacterModal}
                 audioEngine={audioEngine}
                 onEnterUniverse={onEnterUniverse}
-                onOpenConstellation={() => setIsConstellationModalOpen(true)}
+                onOpenConstellation={() => {
+                    setIsTransitioningToUniverse(true);
+                    audioEngine.playWarpSound();
+                    const soundtrackManager = SoundtrackManager.getInstance();
+                    soundtrackManager.init();
+                    soundtrackManager.setMood('ambient');
+                    setIsConstellationModalOpen(true);
+                }}
                 isTimerEnded={isTimerEnded}
                 devUnlocked={devUnlocked}
                 timeRemaining={timeRemaining}

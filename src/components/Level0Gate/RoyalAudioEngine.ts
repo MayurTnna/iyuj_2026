@@ -7,6 +7,7 @@
 export class RoyalAudioEngine {
     private ctx: AudioContext | null = null;
     private masterGain: GainNode | null = null;
+    private sfxGain: GainNode | null = null;
     private oscillators: OscillatorNode[] = [];
     public isPlaying: boolean = false;
 
@@ -18,6 +19,10 @@ export class RoyalAudioEngine {
         this.masterGain = this.ctx.createGain();
         this.masterGain.gain.setValueAtTime(0.01, this.ctx.currentTime);
         this.masterGain.connect(this.ctx.destination);
+
+        this.sfxGain = this.ctx.createGain();
+        this.sfxGain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+        this.sfxGain.connect(this.ctx.destination);
     }
 
     public startAmbience(): void {
@@ -108,28 +113,86 @@ export class RoyalAudioEngine {
     }
 
     public playWarpSound(): void {
-        if (!this.ctx || !this.isPlaying || !this.masterGain) return;
+        this.init();
+        if (!this.ctx || !this.sfxGain) return;
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+        }
 
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const now = this.ctx.currentTime;
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1760, this.ctx.currentTime + 1.4);
+        // 1. Deep Sub-bass swell for universe formation
+        const subOsc = this.ctx.createOscillator();
+        const subGain = this.ctx.createGain();
+        subOsc.type = 'sine';
+        subOsc.frequency.setValueAtTime(65, now);
+        subOsc.frequency.exponentialRampToValueAtTime(320, now + 1.6);
 
-        gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.14, this.ctx.currentTime + 0.7);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.8);
+        subGain.gain.setValueAtTime(0.001, now);
+        subGain.gain.linearRampToValueAtTime(0.28, now + 0.6);
+        subGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
 
-        osc.connect(gain);
-        gain.connect(this.masterGain);
+        subOsc.connect(subGain);
+        subGain.connect(this.sfxGain);
+        subOsc.start(now);
+        subOsc.stop(now + 2.0);
 
-        osc.start();
-        osc.stop(this.ctx.currentTime + 1.8);
+        // 2. Rising celestial harmonic sweep
+        const sweepOsc = this.ctx.createOscillator();
+        const sweepGain = this.ctx.createGain();
+        sweepOsc.type = 'triangle';
+        sweepOsc.frequency.setValueAtTime(220, now);
+        sweepOsc.frequency.exponentialRampToValueAtTime(1760, now + 1.6);
+
+        sweepGain.gain.setValueAtTime(0.001, now);
+        sweepGain.gain.linearRampToValueAtTime(0.18, now + 0.8);
+        sweepGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+
+        sweepOsc.connect(sweepGain);
+        sweepGain.connect(this.sfxGain);
+        sweepOsc.start(now);
+        sweepOsc.stop(now + 2.0);
+
+        // 3. Shimmering cosmic stardust whoosh
+        try {
+            const bufferSize = this.ctx.sampleRate * 2;
+            const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            const whiteNoise = this.ctx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(300, now);
+            filter.frequency.exponentialRampToValueAtTime(2800, now + 1.5);
+            filter.Q.setValueAtTime(3.0, now);
+
+            const noiseGain = this.ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.001, now);
+            noiseGain.gain.linearRampToValueAtTime(0.14, now + 0.7);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+
+            whiteNoise.connect(filter);
+            filter.connect(noiseGain);
+            noiseGain.connect(this.sfxGain);
+
+            whiteNoise.start(now);
+            whiteNoise.stop(now + 2.0);
+        } catch {
+            // Buffer fallback
+        }
     }
 
     public playChime(): void {
-        if (!this.ctx || !this.isPlaying || !this.masterGain) return;
+        this.init();
+        if (!this.ctx || !this.sfxGain) return;
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+        }
 
         const chimeFreqs = [523.25, 659.25, 783.99, 1046.50, 1318.51];
         const freq = chimeFreqs[Math.floor(Math.random() * chimeFreqs.length)];
@@ -140,11 +203,11 @@ export class RoyalAudioEngine {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
 
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 2.5);
 
         osc.connect(gain);
-        gain.connect(this.masterGain);
+        gain.connect(this.sfxGain);
 
         osc.start();
         osc.stop(this.ctx.currentTime + 2.5);
