@@ -34,60 +34,122 @@ export const ConstellationSystem: React.FC = () => {
         navigateToRealm(id);
     };
 
-    // Calculate connecting constellation lines between discovered nodes
-    const linePoints = useMemo(() => {
+    // 1. Full Celestial Constellation Trajectory connecting all 10 realms in story sequence
+    const allPathPoints = useMemo(() => {
         const points: THREE.Vector3[] = [];
-        const discovered = REALM_IDS.filter((id) => realmStatuses[id] !== 'dormant');
+        for (let i = 0; i < REALM_IDS.length - 1; i++) {
+            const r1 = REALMS[REALM_IDS[i]];
+            const r2 = REALMS[REALM_IDS[i + 1]];
+            points.push(new THREE.Vector3(...r1.coordinates));
+            points.push(new THREE.Vector3(...r2.coordinates));
+        }
+        return points;
+    }, []);
 
-        if (discovered.length > 1) {
-            for (let i = 0; i < discovered.length - 1; i++) {
-                const r1 = REALMS[discovered[i]];
-                const r2 = REALMS[discovered[i + 1]];
+    // 2. Identify next realm along the cosmic narrative path
+    const nextRealmId = useMemo(() => {
+        return REALM_IDS.find((id) => realmStatuses[id] !== 'completed') || null;
+    }, [realmStatuses]);
+
+    // 3. Highlighted golden path between completed milestones
+    const completedPathPoints = useMemo(() => {
+        const points: THREE.Vector3[] = [];
+        for (let i = 0; i < REALM_IDS.length - 1; i++) {
+            const id1 = REALM_IDS[i];
+            const id2 = REALM_IDS[i + 1];
+            if (realmStatuses[id1] === 'completed') {
+                const r1 = REALMS[id1];
+                const r2 = REALMS[id2];
                 points.push(new THREE.Vector3(...r1.coordinates));
                 points.push(new THREE.Vector3(...r2.coordinates));
-            }
-            // Loop last back to first to form constellation closure
-            if (discovered.length >= 4) {
-                const rFirst = REALMS[discovered[0]];
-                const rLast = REALMS[discovered[discovered.length - 1]];
-                points.push(new THREE.Vector3(...rLast.coordinates));
-                points.push(new THREE.Vector3(...rFirst.coordinates));
             }
         }
         return points;
     }, [realmStatuses]);
 
+    // 4. Luminous active trajectory beam leading to the next unvisited realm
+    const activeGuidePoints = useMemo(() => {
+        if (!nextRealmId) return [];
+        const nextIdx = REALM_IDS.findIndex((id) => id === nextRealmId);
+        if (nextIdx <= 0) return [];
+        const prev = REALMS[REALM_IDS[nextIdx - 1]];
+        const next = REALMS[REALM_IDS[nextIdx]];
+        return [
+            new THREE.Vector3(...prev.coordinates),
+            new THREE.Vector3(...next.coordinates)
+        ];
+    }, [nextRealmId]);
+
     return (
         <group ref={groupRef}>
-            {/* Constellation Connecting Line Segments */}
-            {linePoints.length > 0 && (
+            {/* Ethereal Full Constellation Path (Guides her through the cosmic story arc) */}
+            <lineSegments>
+                <bufferGeometry>
+                    <bufferAttribute
+                        attach="attributes-position"
+                        args={[
+                            new Float32Array(allPathPoints.flatMap((p) => [p.x, p.y, p.z])),
+                            3
+                        ]}
+                    />
+                </bufferGeometry>
+                <lineBasicMaterial
+                    color="#D4AF37"
+                    transparent
+                    opacity={0.22}
+                    blending={THREE.AdditiveBlending}
+                />
+            </lineSegments>
+
+            {/* Glowing Golden Traversed Path */}
+            {completedPathPoints.length > 0 && (
                 <lineSegments>
                     <bufferGeometry>
                         <bufferAttribute
                             attach="attributes-position"
                             args={[
-                                new Float32Array(
-                                    linePoints.flatMap((p) => [p.x, p.y, p.z])
-                                ),
+                                new Float32Array(completedPathPoints.flatMap((p) => [p.x, p.y, p.z])),
                                 3
                             ]}
                         />
                     </bufferGeometry>
                     <lineBasicMaterial
-                        color="#D4AF37"
+                        color="#FFD700"
                         transparent
-                        opacity={0.35}
+                        opacity={0.65}
                         blending={THREE.AdditiveBlending}
                     />
                 </lineSegments>
             )}
 
-            {/* 8 Celestial Realm Nodes */}
+            {/* Radiant Active Guide Beam to Next Realm */}
+            {activeGuidePoints.length > 0 && (
+                <lineSegments>
+                    <bufferGeometry>
+                        <bufferAttribute
+                            attach="attributes-position"
+                            args={[
+                                new Float32Array(activeGuidePoints.flatMap((p) => [p.x, p.y, p.z])),
+                                3
+                            ]}
+                        />
+                    </bufferGeometry>
+                    <lineBasicMaterial
+                        color="#FFF8DC"
+                        transparent
+                        opacity={0.88}
+                        blending={THREE.AdditiveBlending}
+                    />
+                </lineSegments>
+            )}
+
+            {/* 10 Celestial Realm Nodes in Story Sequence */}
             {REALM_IDS.map((id) => {
                 const realm = REALMS[id];
                 const status = realmStatuses[id];
                 const isSelected = activeRealmId === id;
                 const isDormant = status === 'dormant';
+                const isNext = id === nextRealmId && activeRealmId === null && status !== 'completed';
 
                 return (
                     <group key={id} position={realm.coordinates}>
@@ -103,7 +165,7 @@ export const ConstellationSystem: React.FC = () => {
                                 <meshStandardMaterial
                                     color={isDormant ? '#334155' : realm.color}
                                     emissive={isDormant ? '#0F172A' : realm.emissiveColor}
-                                    emissiveIntensity={isDormant ? 0.2 : 0.85}
+                                    emissiveIntensity={isDormant ? 0.2 : (isNext ? 1.0 : 0.85)}
                                     roughness={0.3}
                                     metalness={0.7}
                                 />
@@ -138,6 +200,20 @@ export const ConstellationSystem: React.FC = () => {
                             </mesh>
                         )}
 
+                        {/* Guided Celestial Beacon Ring for Next Unvisited Realm */}
+                        {isNext && (
+                            <mesh scale={[1.65, 1.65, 1.65]}>
+                                <ringGeometry args={[14, 16.5, 32]} />
+                                <meshBasicMaterial
+                                    color="#FFF8DC"
+                                    transparent
+                                    opacity={0.75}
+                                    side={THREE.DoubleSide}
+                                    blending={THREE.AdditiveBlending}
+                                />
+                            </mesh>
+                        )}
+
                         {/* Interactive Drei HTML Label - Staggered offset prevents collisions */}
                         {activeRealmId === null && (
                             <Html
@@ -146,13 +222,16 @@ export const ConstellationSystem: React.FC = () => {
                                 style={{ pointerEvents: 'auto' }}
                             >
                                 <button
-                                    className={`constellation-node-btn ${isSelected ? 'active' : ''}`}
+                                    className={`constellation-node-btn ${isSelected ? 'active' : ''} ${isNext ? 'next-path-beacon' : ''}`}
                                     onClick={() => handleNodeClick(id)}
                                 >
                                     <span>{realm.icon}</span>
                                     <span>{realm.title}</span>
                                     {status === 'completed' && (
                                         <span style={{ color: '#10B981', fontSize: '10px' }}>✓</span>
+                                    )}
+                                    {isNext && (
+                                        <span className="beacon-next-pill">✦ Next</span>
                                     )}
                                 </button>
                             </Html>

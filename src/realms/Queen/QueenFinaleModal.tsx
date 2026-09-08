@@ -146,28 +146,21 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
         };
     }, [isOpen]);
 
-    // 3. Step-by-step poetic pacing
+    // Show all 4 lines and birthday proclamation immediately/smoothly
     useEffect(() => {
-        if (!isOpen) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            return;
-        }
+        if (!isOpen) return;
 
-        let step = 0;
-        timerRef.current = window.setInterval(() => {
-            step++;
-            if (step <= FINALE_LINES.length) {
-                setVisibleLineCount(step);
-            } else if (step === FINALE_LINES.length + 1) {
-                setShowTitle(true);
-                completeRealm('queen');
-            } else {
-                if (timerRef.current) clearInterval(timerRef.current);
-            }
-        }, 2200);
+        // Show all 4 lines immediately
+        setVisibleLineCount(FINALE_LINES.length);
+        
+        // Unfold title and celebration letter gracefully after 800ms
+        const timer = window.setTimeout(() => {
+            setShowTitle(true);
+            completeRealm('queen');
+        }, 800);
 
         return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
+            clearTimeout(timer);
         };
     }, [isOpen, completeRealm]);
 
@@ -193,14 +186,16 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
             <div className="finale-content-container">
                 <div className="finale-royal-crest">👑</div>
 
-                {FINALE_LINES.map((line, idx) => (
-                    <p
-                        key={`finale-line-${idx}`}
-                        className={`finale-line ${idx < visibleLineCount ? 'visible' : ''}`}
-                    >
-                        “{line}”
-                    </p>
-                ))}
+                <div className="finale-poem-box">
+                    {FINALE_LINES.map((line, idx) => (
+                        <p
+                            key={`finale-line-${idx}`}
+                            className={`finale-line ${idx < visibleLineCount ? 'visible' : ''}`}
+                        >
+                            “{line}”
+                        </p>
+                    ))}
+                </div>
 
                 <h1 className={`finale-grand-title ${showTitle ? 'visible' : ''}`}>
                     HAPPY BIRTHDAY, QUEEN JIYU 👑

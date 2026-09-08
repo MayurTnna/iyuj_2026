@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Sparkles, Compass, Volume2, VolumeX, ArrowLeft, Map } from 'lucide-react';
 import { useUniverseStore } from '../store/universeStore';
-import { REALMS } from '../data/realms';
+import { REALMS, REALM_IDS } from '../data/realms';
 import { SoundtrackManager } from '../audio/SoundtrackManager';
 import type { QualityTier } from '../types/universe.types';
 import { ConstellationMapModal } from './ConstellationMapModal';
@@ -10,6 +10,7 @@ import './CelestialHUD.css';
 export const CelestialHUD: React.FC = () => {
     const {
         activeRealmId,
+        realmStatuses,
         memories,
         unlockedMemoriesCount,
         storyProgress,
@@ -27,6 +28,8 @@ export const CelestialHUD: React.FC = () => {
     const audioManager = SoundtrackManager.getInstance();
 
     const currentRealm = activeRealmId ? REALMS[activeRealmId] : null;
+    const nextRealmId = REALM_IDS.find((id) => realmStatuses[id] !== 'completed') || null;
+    const nextRealm = nextRealmId ? REALMS[nextRealmId] : null;
 
     const handleBrandClick = () => {
         crownClicksRef.current++;
@@ -96,7 +99,11 @@ export const CelestialHUD: React.FC = () => {
                     <span className="compass-dot" />
                     <span>JIYU</span>
                     <span className="compass-sep">//</span>
-                    <span>{currentRealm ? currentRealm.title : 'PANORAMIC COSMOS'}</span>
+                    <span>
+                        {currentRealm
+                            ? currentRealm.title
+                            : (nextRealm ? `NEXT: ${nextRealm.icon} ${nextRealm.title}` : 'ALL REALMS ALIGNED 👑')}
+                    </span>
                     <span className="compass-sep">//</span>
                     <span>23.09</span>
                 </div>
