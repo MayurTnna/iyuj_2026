@@ -203,6 +203,13 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
 
                 {showTitle && (
                     <>
+                        {/* Luminous Royal Gratitude Declaration */}
+                        <div className="finale-gratitude-banner">
+                            <span className="gratitude-star">✨</span>
+                            <span className="gratitude-quote">“Thank you so much for everything :)”</span>
+                            <span className="gratitude-star">✨</span>
+                        </div>
+
                         <div className="finale-birthday-letter">
                             {/* Divine Birthday Blessings */}
                             <p className="finale-blessings-prayer">
@@ -215,6 +222,14 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
                                 conquers every summit... May your 23rd year unfold with boundless triumph, endless joy,
                                 and all the love this cosmos can hold.”
                             </p>
+
+                            {/* Deep Gratitude Tribute Card */}
+                            <div className="finale-gratitude-highlight">
+                                <p className="finale-gratitude-highlight-text">
+                                    “From every quiet conversation to every unforgettable smile... thank you so much for everything :)
+                                    Thank you for your warmth, your kindness, and for being the most cherished universe anyone could ever know.”
+                                </p>
+                            </div>
 
                             <p className="finale-letter-signature">
                                 Forever Cherished • Happy Birthday Queen Jiyu ❤️✨
