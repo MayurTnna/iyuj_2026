@@ -93,7 +93,7 @@ export const INITIAL_MEMORIES: MemoryFragment[] = [
         location: 'Late Night Study Desk',
         dateMeta: 'Sovereign Ambition',
         quote: 'Keep trusting yourself, keep faith, keep smiling, and keep hustling—the throne you are working for is already yours.',
-        reflection: 'I see your relentless late-night grind, the stacks of law books, and the high standards you hold yourself to. When doubts whisper, remember who you are. Keep trusting your mind, keep your faith unshakeable, keep that warm smile alive, and keep hustling. The CS summit and the black Mercedes S-Class at sunrise are waiting for Queen Jiyu.',
+        reflection: 'I see your relentless late-night grind, the stacks of law books, and the high standards you hold yourself to. When doubts whisper, remember who you are. Keep trusting your mind, keep your faith unshakeable, keep that warm smile alive, and keep hustling. The CS summit and the black Mercedes S-Class at sunrise are waiting for Queen Jiyu. No self-doubts. Let others ask questions; you answer them with your actions, your courage, and your radiant smiles.',
         unlocked: false
     },
     {

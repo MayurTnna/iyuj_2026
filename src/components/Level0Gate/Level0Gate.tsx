@@ -8,6 +8,7 @@ import { CharacterWishlistModal } from './CharacterWishlistModal';
 import { EasterEggModal } from './EasterEggModal';
 import { JiyuConstellationConnectModal } from './JiyuConstellationConnectModal';
 import { QueenPatienceModal } from './QueenPatienceModal';
+import { BirthdayFireworks } from './BirthdayFireworks';
 import './Level0Gate.css';
 
 interface Level0GateProps {
@@ -202,6 +203,18 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
                 setIsTimerEnded(true);
                 setTimeRemaining({ days: '00', hours: '00', minutes: '00', seconds: '00' });
                 setStatusMessage(`The moment has arrived! Queen Jiyu's constellation is aligned...`);
+                // Smoothly fade out timer artifact box so fireworks celebration takes center stage
+                gsap.to('#timerArtifact', {
+                    opacity: 0,
+                    scale: 0.88,
+                    duration: 1.2,
+                    ease: 'power2.inOut',
+                    delay: 0.9,
+                    onComplete: () => {
+                        const el = document.getElementById('timerArtifact');
+                        if (el) el.style.display = 'none';
+                    }
+                });
                 return;
             }
 
@@ -310,9 +323,37 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
         };
     }, [audioEngine]);
 
+    const handleCloseConstellationModal = () => {
+        setIsConstellationModalOpen(false);
+        gsap.to(['#heroHeaderBox', '#timerArtifact', '#heroCtaWrapper'], {
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+    };
+
     const handleEnterUniverseClick = () => {
         if (isTimerEnded || devUnlocked) {
-            setIsConstellationModalOpen(true);
+            gsap.to(['#heroHeaderBox', '#timerArtifact', '#heroCtaWrapper'], {
+                opacity: 0,
+                scale: 0.88,
+                duration: 0.6,
+                ease: 'power2.in'
+            });
+
+            audioEngine.playWarpSound();
+
+            const reveal = () => {
+                setIsConstellationModalOpen(true);
+                audioEngine.playChime();
+            };
+
+            if (universeRef.current) {
+                universeRef.current.triggerHyperspeedWarp(reveal);
+            } else {
+                setTimeout(reveal, 1400);
+            }
         } else {
             audioEngine.playChime();
             setIsPatienceModalOpen(true);
@@ -454,6 +495,9 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
                 </div>
             </header>
 
+            {/* Birthday Fireworks Celebration upon Timer Completion */}
+            {isTimerEnded && <BirthdayFireworks />}
+
             {/* Main Container */}
             <main className="main-wrapper">
                 <section className="hero-gatekeeper" id="heroGatekeeperSection">
@@ -561,19 +605,14 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
                     <div className="hero-cta-wrapper" id="heroCtaWrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <button
                             id="enterUniverseBtn"
-                            className="royal-cta-btn"
-                            style={isTimerEnded || devUnlocked ? {
-                                background: 'linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%)',
-                                color: '#020408',
-                                boxShadow: '0 0 35px rgba(255, 215, 0, 0.6)'
-                            } : undefined}
+                            className={`royal-cta-btn ${isTimerEnded || devUnlocked ? 'unlocked' : ''}`}
                             onClick={handleEnterUniverseClick}
                         >
                             <span className="cta-glow-bg" />
                             <span className="cta-border-glow" />
                             <span className="cta-content">
                                 <Sparkles className="cta-icon" />
-                                <span className="cta-text" id="ctaText" style={{ fontWeight: 800 }}>
+                                <span className="cta-text" id="ctaText">
                                     {isTimerEnded || devUnlocked
                                         ? 'Align JIYU Stars & Enter The Universe 🌌'
                                         : 'Enter Queen Jiyu\'s Universe 🌌'}
@@ -651,7 +690,7 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
             {/* Interactive JIYU Constellation Connection Mini-Game */}
             <JiyuConstellationConnectModal
                 isOpen={isConstellationModalOpen}
-                onClose={() => setIsConstellationModalOpen(false)}
+                onClose={handleCloseConstellationModal}
                 onSuccess={() => {
                     setIsConstellationModalOpen(false);
                     audioEngine.stopAmbience();

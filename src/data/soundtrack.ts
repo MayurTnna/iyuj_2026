@@ -18,6 +18,7 @@ export interface SoundtrackTrack {
     name: string;
     description: string;
     customAudioUrl: string | null; // Developer can drop local MP3/WAV paths here
+    startTime?: number; // Optional start offset in seconds for iconic hook / beat drop
     proceduralConfig: {
         baseDroneFreqs: number[];
         leitmotifSpeed: number; // seconds per note
@@ -100,9 +101,10 @@ export const SOUNDTRACK_MAP: Record<AudioMood, SoundtrackTrack> = {
     },
     'silent-language': {
         id: 'silent-language',
-        name: 'Signed Dialect & Soul Energy — Khamoshiyan',
-        description: 'The iconic ballad of unspoken connection by Arijit Singh.',
-        customAudioUrl: '/audio/silent-language.m4a',
+        name: 'The Silent Language — Isharon Isharon Mein',
+        description: 'The golden classic by Asha Bhosle & Mohammed Rafi from Kashmir Ki Kali.',
+        customAudioUrl: '/audio/silent-language.mp3',
+        startTime: 0,
         proceduralConfig: {
             baseDroneFreqs: [],
             leitmotifSpeed: 3.5,
@@ -146,9 +148,10 @@ export const SOUNDTRACK_MAP: Record<AudioMood, SoundtrackTrack> = {
     },
     'ascent': {
         id: 'ascent',
-        name: 'The Mountain Winds — Aashayein',
-        description: 'Triumphant anthem of ambition and conquering the summit.',
-        customAudioUrl: '/audio/ascent.m4a',
+        name: 'The Sovereign Summit — Yeh Ishq Ishq',
+        description: 'High-energy explosive anthem from Dhurandhar for Queen Jiyu’s ascent.',
+        customAudioUrl: '/audio/ascent.mp3',
+        startTime: 8,
         proceduralConfig: {
             baseDroneFreqs: [146.83, 196.00, 293.66],
             leitmotifSpeed: 1.2,

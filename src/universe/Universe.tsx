@@ -3,6 +3,7 @@ import { CelestialHUD } from '../ui/CelestialHUD';
 import { UniverseCanvas } from './UniverseCanvas';
 import { RealmOverlay } from '../realms/RealmOverlay';
 import { RoyalEasterEggModal } from '../ui/RoyalEasterEggModal';
+import { UniverseCursiveLoader } from './UniverseCursiveLoader';
 import { SoundtrackManager } from '../audio/SoundtrackManager';
 import { useUniverseStore } from '../store/universeStore';
 import './Universe.css';
@@ -42,6 +43,7 @@ export const Universe: React.FC = () => {
 
     return (
         <div className="universe-container">
+            <UniverseCursiveLoader durationMs={2800} />
             <CelestialHUD />
             <UniverseCanvas />
             <RealmOverlay />

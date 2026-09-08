@@ -11,6 +11,19 @@ import { useUniverseStore } from '../store/universeStore';
 import { SoundtrackManager } from '../audio/SoundtrackManager';
 import type { RealmId } from '../types/universe.types';
 
+const LABEL_OFFSETS: Record<RealmId, [number, number, number]> = {
+    'ascent': [0, 20, 0],
+    'first-rhythm': [-20, 18, 0],
+    'river': [20, 18, 0],
+    'radiance': [-26, 14, 0],
+    'rose': [26, 14, 0],
+    'silent-language': [-28, -6, 0],
+    'sanctuary': [28, -6, 0],
+    'retina': [-16, -20, 0],
+    'missed-days': [16, -20, 0],
+    'queen': [0, 24, 0]
+};
+
 export const ConstellationSystem: React.FC = () => {
     const { realmStatuses, activeRealmId, navigateToRealm } = useUniverseStore();
     const groupRef = useRef<THREE.Group | null>(null);
@@ -125,10 +138,10 @@ export const ConstellationSystem: React.FC = () => {
                             </mesh>
                         )}
 
-                        {/* Interactive Drei HTML Label - Only active in Cosmos view */}
+                        {/* Interactive Drei HTML Label - Staggered offset prevents collisions */}
                         {activeRealmId === null && (
                             <Html
-                                position={[0, 16, 0]}
+                                position={LABEL_OFFSETS[id] || [0, 16, 0]}
                                 center
                                 style={{ pointerEvents: 'auto' }}
                             >

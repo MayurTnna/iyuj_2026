@@ -217,27 +217,33 @@ export const RealmOverlay: React.FC = () => {
                             Explore and align all 10 realm memories so your sovereign constellation can ignite with full celestial luminosity for the Grand Coronation Finale ✨
                         </p>
 
+                        <div style={{ margin: '1rem 0', width: '100%' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#F5D77F', marginBottom: '6px', fontFamily: 'Cinzel, serif' }}>
+                                <span>Constellation Alignment</span>
+                                <span>{unlockedMemoriesCount} / {totalMemoriesCount} Complete</span>
+                            </div>
+                            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                                <div style={{ width: `${(unlockedMemoriesCount / totalMemoriesCount) * 100}%`, height: '100%', background: 'linear-gradient(90deg, #D4AF37, #FFD700)', transition: 'width 0.5s ease' }} />
+                            </div>
+                        </div>
+
                         <div style={{ display: 'flex', gap: '0.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                             <button
-                                className="btn-realm-secondary"
+                                className="btn-realm-primary"
                                 onClick={() => {
                                     setShowingAlignmentAlert(false);
                                     navigateToRealm(null);
                                 }}
                             >
                                 <ArrowLeft size={14} />
-                                <span>Explore Remaining Realms</span>
+                                <span>Explore Remaining Realms ({totalMemoriesCount - unlockedMemoriesCount} left)</span>
                             </button>
 
                             <button
-                                className="btn-realm-primary"
-                                onClick={() => {
-                                    setShowingAlignmentAlert(false);
-                                    setShowingFinale(true);
-                                }}
+                                className="btn-realm-secondary"
+                                onClick={() => setShowingAlignmentAlert(false)}
                             >
-                                <Crown size={14} />
-                                <span>Grand Coronation Anyway 👑</span>
+                                <span>Stay In Queen Realm</span>
                             </button>
                         </div>
                     </div>

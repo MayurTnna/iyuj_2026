@@ -80,7 +80,7 @@ export class SoundtrackManager {
         this.applyMood(mood, leitmotifStage);
     }
 
-    private fadeInRealmAudio(url: string): void {
+    private fadeInRealmAudio(url: string, startTime: number = 0): void {
         if (this.currentAudioUrl === url && this.realmAudio && !this.realmAudio.paused) {
             return;
         }
@@ -106,6 +106,9 @@ export class SoundtrackManager {
         const audio = new Audio(url);
         audio.loop = true;
         audio.volume = 0;
+        if (startTime > 0) {
+            audio.currentTime = startTime;
+        }
         this.realmAudio = audio;
         this.currentAudioUrl = url;
 
@@ -181,7 +184,7 @@ export class SoundtrackManager {
 
         // 2. Custom Bollywood Audio Hook handling
         if (trackData.customAudioUrl) {
-            this.fadeInRealmAudio(trackData.customAudioUrl);
+            this.fadeInRealmAudio(trackData.customAudioUrl, trackData.startTime || 0);
             // Lower ambient background drone so the song is clear and glorious
             this.ambienceGain.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime + 1.0);
             if (this.leitmotifIntervalId) {

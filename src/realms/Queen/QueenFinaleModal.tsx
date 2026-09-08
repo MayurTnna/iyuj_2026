@@ -1,10 +1,10 @@
 // ==========================================================================
 // QUEEN JIYU'S UNIVERSE - GRAND FINALE DECLARATION MODAL
-// Step-by-step cinematic reveal with pure silence and full orchestral reprise
+// Photorealistic Moon, Falling Snowfall, Khamoshiyan -> Perfect Crossfade, & Sovereign Blessings
 // ==========================================================================
 
 import React, { useState, useEffect, useRef } from 'react';
-import { SoundtrackManager } from '../../audio/SoundtrackManager';
+import rawMoonImg from '../../assets/images/raw_moon.jpg';
 import { useUniverseStore } from '../../store/universeStore';
 import './QueenFinaleModal.css';
 
@@ -23,14 +23,28 @@ const FINALE_LINES = [
 export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onClose }) => {
     const [visibleLineCount, setVisibleLineCount] = useState(0);
     const [showTitle, setShowTitle] = useState(false);
-    const audioManager = SoundtrackManager.getInstance();
     const completeRealm = useUniverseStore((s) => s.completeRealm);
     const navigateToRealm = useUniverseStore((s) => s.navigateToRealm);
 
     const timerRef = useRef<number | null>(null);
+    const snowCanvasRef = useRef<HTMLCanvasElement | null>(null);
+    const khamoshiyanRef = useRef<HTMLAudioElement | null>(null);
+    const perfectRef = useRef<HTMLAudioElement | null>(null);
+
+    const stopAllAudio = () => {
+        if (khamoshiyanRef.current) {
+            khamoshiyanRef.current.pause();
+            khamoshiyanRef.current = null;
+        }
+        if (perfectRef.current) {
+            perfectRef.current.pause();
+            perfectRef.current = null;
+        }
+    };
 
     const handleClose = () => {
         if (timerRef.current) clearInterval(timerRef.current);
+        stopAllAudio();
         setVisibleLineCount(0);
         setShowTitle(false);
         onClose();
@@ -41,14 +55,132 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
         navigateToRealm('retina');
     };
 
+    // 1. Grand Finale Audio Sequencing:
+    // 0 - 10s: Khamoshiyan gentle fade-in
+    // 10s+: Crossfade to Ed Sheeran's "Perfect" chorus
+    useEffect(() => {
+        if (!isOpen) {
+            stopAllAudio();
+            return;
+        }
+
+        // Initialize and fade in Khamoshiyan
+        const kham = new Audio('/audio/khamoshiyan.m4a');
+        kham.loop = false;
+        kham.volume = 0;
+        khamoshiyanRef.current = kham;
+        kham.play().catch((err) => console.warn('Khamoshiyan play error:', err));
+
+        let khamVol = 0;
+        const khamFadeInterval = window.setInterval(() => {
+            khamVol = Math.min(0.75, khamVol + 0.05);
+            if (kham) kham.volume = khamVol;
+            if (khamVol >= 0.75) clearInterval(khamFadeInterval);
+        }, 120);
+
+        // At 9.5s, crossfade Khamoshiyan into Ed Sheeran's "Perfect" chorus
+        const crossfadeTimer = window.setTimeout(() => {
+            // Fade out Khamoshiyan
+            const khamFadeOut = window.setInterval(() => {
+                if (kham) {
+                    kham.volume = Math.max(0, kham.volume - 0.08);
+                    if (kham.volume <= 0) {
+                        clearInterval(khamFadeOut);
+                        kham.pause();
+                    }
+                }
+            }, 100);
+
+            // Start Ed Sheeran Perfect right at the iconic chorus
+            const perfect = new Audio('/audio/perfect.mp3');
+            perfect.loop = true;
+            perfect.currentTime = 52; // "Baby, I'm dancing in the dark..."
+            perfect.volume = 0;
+            perfectRef.current = perfect;
+            perfect.play().catch((err) => console.warn('Perfect play error:', err));
+
+            let perfVol = 0;
+            const perfFadeInterval = window.setInterval(() => {
+                perfVol = Math.min(0.85, perfVol + 0.05);
+                if (perfect) perfect.volume = perfVol;
+                if (perfVol >= 0.85) clearInterval(perfFadeInterval);
+            }, 100);
+        }, 9500);
+
+        return () => {
+            clearInterval(khamFadeInterval);
+            clearTimeout(crossfadeTimer);
+            stopAllAudio();
+        };
+    }, [isOpen]);
+
+    // 2. Snowfall Canvas Particle Animation
+    useEffect(() => {
+        if (!isOpen) return;
+        const canvas = snowCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let animId: number;
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        const handleResize = () => {
+            if (!canvas) return;
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', handleResize);
+
+        const flakeCount = 85;
+        const flakes = Array.from({ length: flakeCount }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 2.6 + 1.2,
+            speedY: Math.random() * 0.8 + 0.45,
+            speedX: Math.random() * 0.4 - 0.2,
+            phase: Math.random() * Math.PI * 2,
+            opacity: Math.random() * 0.65 + 0.35
+        }));
+
+        const render = () => {
+            ctx.clearRect(0, 0, width, height);
+            flakes.forEach((f) => {
+                f.y += f.speedY;
+                f.phase += 0.02;
+                f.x += Math.sin(f.phase) * 0.45 + f.speedX;
+
+                if (f.y > height) {
+                    f.y = -10;
+                    f.x = Math.random() * width;
+                }
+                if (f.x > width) f.x = 0;
+                if (f.x < 0) f.x = width;
+
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 252, 235, ${f.opacity})`;
+                ctx.shadowColor = '#FFD700';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+            });
+            animId = requestAnimationFrame(render);
+        };
+        render();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(animId);
+        };
+    }, [isOpen]);
+
+    // 3. Step-by-step poetic pacing
     useEffect(() => {
         if (!isOpen) {
             if (timerRef.current) clearInterval(timerRef.current);
             return;
         }
-
-        // 1. Initial silence
-        audioManager.setMood('silent-language');
 
         let step = 0;
         timerRef.current = window.setInterval(() => {
@@ -57,8 +189,6 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
                 setVisibleLineCount(step);
             } else if (step === FINALE_LINES.length + 1) {
                 setShowTitle(true);
-                // 2. Play Ed Sheeran's "Perfect" for Queen Jiyu's Grand Celebration
-                audioManager.setMood('finale-perfect');
                 completeRealm('queen');
             } else {
                 if (timerRef.current) clearInterval(timerRef.current);
@@ -68,19 +198,24 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [isOpen, audioManager, completeRealm]);
+    }, [isOpen, completeRealm]);
 
     if (!isOpen) return null;
 
     return (
         <div className="finale-blackout-overlay" role="dialog" aria-modal="true">
-            {/* Celestial Glowing Moon in Background */}
+            {/* Falling Snowfall Canvas Backdrop */}
+            <canvas ref={snowCanvasRef} className="finale-snowfall-canvas" />
+
+            {/* Photorealistic Raw Celestial Moon in Background */}
             <div className="finale-moon-container">
                 <div className="finale-moon-halo" />
                 <div className="finale-moon-sphere">
-                    <div className="moon-crater crater-1" />
-                    <div className="moon-crater crater-2" />
-                    <div className="moon-crater crater-3" />
+                    <img
+                        src={rawMoonImg}
+                        alt="Photorealistic Raw Celestial Moon"
+                        className="finale-raw-moon-img"
+                    />
                 </div>
             </div>
 
@@ -103,12 +238,18 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
                 {showTitle && (
                     <>
                         <div className="finale-birthday-letter">
+                            {/* Divine Birthday Blessings */}
+                            <p className="finale-blessings-prayer">
+                                “May God bless Queen Jiyu with boundless health, everlasting joy, towering success, and a universe filled with radiant smiles.”
+                            </p>
+
                             <p className="finale-letter-message">
                                 “To the most graceful, inspiring, and beautiful soul in this universe—whose smile brings
                                 golden morning light, whose presence creates a sanctuary of calm, and whose sovereign spirit
                                 conquers every summit... May your 23rd year unfold with boundless triumph, endless joy,
                                 and all the love this cosmos can hold.”
                             </p>
+
                             <p className="finale-letter-signature">
                                 Forever Cherished • Happy Birthday Queen Jiyu ❤️✨
                             </p>
@@ -134,3 +275,4 @@ export const QueenFinaleModal: React.FC<QueenFinaleModalProps> = ({ isOpen, onCl
         </div>
     );
 };
+
