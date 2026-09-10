@@ -10,6 +10,7 @@ import { JiyuConstellationConnectModal } from './JiyuConstellationConnectModal';
 import { QueenPatienceModal } from './QueenPatienceModal';
 import { BirthdayFireworks } from './BirthdayFireworks';
 import { CelebrationSongBanner } from './CelebrationSongBanner';
+import { SoundtrackManager } from '../../audio/SoundtrackManager';
 import './Level0Gate.css';
 
 interface Level0GateProps {
@@ -330,6 +331,7 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
     const handleCloseConstellationModal = () => {
         setIsConstellationModalOpen(false);
         setIsTransitioningToUniverse(false);
+        SoundtrackManager.getInstance().stopAll();
         gsap.to(['#heroHeaderBox', '#timerArtifact', '#heroCtaWrapper'], {
             opacity: 1,
             scale: 1,
@@ -345,6 +347,11 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
 
             // 2. Play cinematic universe formation sound (sub-bass swell, harmonic rise, stardust swoosh)
             audioEngine.playWarpSound();
+
+            // 3. Fade in universe formation soundtrack (Interstellar - Cornfield Chase)
+            const soundtrackManager = SoundtrackManager.getInstance();
+            soundtrackManager.init();
+            soundtrackManager.setMood('ambient');
 
             gsap.to(['#heroHeaderBox', '#timerArtifact', '#heroCtaWrapper'], {
                 opacity: 0,
@@ -690,6 +697,9 @@ export const Level0Gate: React.FC<Level0GateProps> = ({ onEnterUniverse }) => {
                 onOpenConstellation={() => {
                     setIsTransitioningToUniverse(true);
                     audioEngine.playWarpSound();
+                    const soundtrackManager = SoundtrackManager.getInstance();
+                    soundtrackManager.init();
+                    soundtrackManager.setMood('ambient');
                     setIsConstellationModalOpen(true);
                 }}
                 isTimerEnded={isTimerEnded}
